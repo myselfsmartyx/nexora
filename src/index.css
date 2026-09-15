@@ -17,7 +17,13 @@
   }
 
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark text-base-bg font-semibold uppercase tracking-wider text-sm rounded-button px-md py-3 transition-fast active:scale-[0.98];
+    @apply text-base-bg font-semibold uppercase tracking-wider text-sm rounded-button px-md transition-fast active:scale-[0.98];
+    background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
+  }
+
+  .input-glow:focus-within {
+    border-color: #00d4aa;
+    box-shadow: 0 0 10px rgba(0, 212, 170, 0.15);
   }
 
   .btn-secondary {
