@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-base-bg text-ink-primary font-sans antialiased;
+    /* Safe areas for notched phones (PWA feel) */
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+@layer components {
+  /* Card — matches Stitch "surface" style: 1px border + soft shadow */
+  .card {
+    @apply bg-base-surface border border-base-border rounded-card shadow-card;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-base-bg font-semibold uppercase tracking-wider text-sm rounded-button px-md py-3 transition-fast active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply bg-base-elevated border border-base-border text-ink-primary font-semibold uppercase tracking-wider text-sm rounded-button px-md py-3 transition-fast active:scale-[0.98];
+  }
+
+  .input {
+    @apply w-full bg-base-elevated border border-base-border rounded-input px-md py-3 text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:border-primary transition-fast;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 px-3 py-1.5 rounded-chip text-caption font-medium bg-base-elevated border border-base-border text-ink-secondary;
+  }
+
+  .chip-active {
+    @apply bg-primary/15 border-primary text-primary;
+  }
+}
