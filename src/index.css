@@ -17,7 +17,7 @@
   }
 
   .btn-primary {
-    @apply text-base-bg font-semibold uppercase tracking-wider text-sm rounded-button px-md transition-fast active:scale-[0.98];
+    @apply text-base-bg font-semibold uppercase tracking-wider text-sm rounded-button px-md transition duration-200 active:scale-[0.98];
     background: linear-gradient(135deg, #00d4aa 0%, #00b894 100%);
   }
 
@@ -27,11 +27,11 @@
   }
 
   .btn-secondary {
-    @apply bg-base-elevated border border-base-border text-ink-primary font-semibold uppercase tracking-wider text-sm rounded-button px-md py-3 transition-fast active:scale-[0.98];
+    @apply bg-base-elevated border border-base-border text-ink-primary font-semibold uppercase tracking-wider text-sm rounded-button px-md py-3 transition duration-200 active:scale-[0.98];
   }
 
   .input {
-    @apply w-full bg-base-elevated border border-base-border rounded-input px-md py-3 text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:border-primary transition-fast;
+    @apply w-full bg-base-elevated border border-base-border rounded-input px-md py-3 text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:border-primary transition duration-200;
   }
 
   .chip {
