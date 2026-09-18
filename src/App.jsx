@@ -47,15 +47,7 @@ export default function App() {
         <main className="max-w-md mx-auto min-h-screen pb-24">
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
-            <Route
-              path="/capture"
-              element={
-                <Placeholder
-                  title="Smart Capture"
-                  subtitle="Capture anything. AI extracts what matters."
-                />
-              }
-            />
+            <Route path="/capture" element={<Capture />} />
             <Route
               path="/neuro"
               element={
