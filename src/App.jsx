@@ -3,23 +3,49 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase.js'
 import BottomNav from './components/BottomNav.jsx'
 import Login from './pages/Login.jsx'
+import Onboarding from './pages/Onboarding.jsx'
 import Placeholder from './pages/Placeholder.jsx'
+
+async function profileNeedsOnboarding(userId) {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('onboarding_answers')
+      .eq('id', userId)
+      .maybeSingle()
+    if (error) throw error
+    // New users (trigger-created row, no answers yet) → onboard
+    return !data || data.onboarding_answers == null
+  } catch (err) {
+    // Fail open: never lock a user out because of a read error
+    console.warn('Onboarding check failed, letting user in:', err.message)
+    return false
+  }
+}
 
 export default function App() {
   const [session, setSession] = useState(null)
+  const [needsOnboarding, setNeedsOnboarding] = useState(false)
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
+    async function handleSession(newSession) {
+      setSession(newSession)
+      if (newSession?.user) {
+        setNeedsOnboarding(await profileNeedsOnboarding(newSession.user.id))
+      } else {
+        setNeedsOnboarding(false)
+      }
+    }
     // Check existing session on load
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setChecking(false)
+      handleSession(data.session).finally(() => setChecking(false))
     })
     // Listen for sign-in / sign-out (works across tabs too)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession)
+      handleSession(newSession)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -40,6 +66,16 @@ export default function App() {
     return <Login />
   }
 
+  // Signed in but never onboarded → 15-question flow
+  if (needsOnboarding) {
+    return (
+      <Onboarding
+        session={session}
+        onComplete={() => setNeedsOnboarding(false)}
+      />
+    )
+  }
+
   return (
     <BrowserRouter>
       {/* Mobile-first app frame: centered column on desktop, full-width on phone */}
@@ -47,15 +83,7 @@ export default function App() {
         <main className="max-w-md mx-auto min-h-screen pb-24">
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
-            <Route
-              path="/capture"
-              element={
-                <Placeholder
-                  title="Smart Capture"
-                  subtitle="Capture anything. AI extracts what matters."
-                />
-              }
-            />
+            <Route path="/capture" element={<Capture />} />
             <Route
               path="/neuro"
               element={
