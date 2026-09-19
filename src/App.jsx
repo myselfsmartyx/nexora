@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase.js'
 import BottomNav from './components/BottomNav.jsx'
 import Login from './pages/Login.jsx'
 import Onboarding from './pages/Onboarding.jsx'
+import Capture from './pages/Capture.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 
 async function profileNeedsOnboarding(userId) {
@@ -83,7 +84,7 @@ export default function App() {
         <main className="max-w-md mx-auto min-h-screen pb-24">
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
-            <Route path="/capture" element={<Capture />} />
+            <Route path="/capture" element={<Capture session={session} />} />
             <Route
               path="/neuro"
               element={
