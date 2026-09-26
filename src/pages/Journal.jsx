@@ -307,7 +307,7 @@ export default function Journal({ session }) {
 
       {/* Composer — full-screen overlay, matches Stitch "New Entry" screen */}
       {composerOpen && (
-        <div className="fixed inset-0 z-50 bg-base-bg flex flex-col max-w-md mx-auto">
+        <div className="fixed inset-0 z-[60] bg-base-bg flex flex-col max-w-md mx-auto">
           <header
             className="flex justify-between items-center px-md h-16 shrink-0"
             style={{ paddingTop: 'env(safe-area-inset-top)' }}
