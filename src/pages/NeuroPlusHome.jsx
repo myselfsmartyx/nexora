@@ -4,11 +4,26 @@ import { Zap, Play, Grid3x3, Calculator, Puzzle, CalendarDays, Trophy, Brain } f
 import { supabase } from '../lib/supabase.js'
 
 const GAMES = [
-  { id: 'memory_matrix', label: 'Memory Matrix', sub: 'Pattern recall', icon: Grid3x3, route: null },
+  { id: 'memory_matrix', label: 'Memory Matrix', sub: 'Pattern recall', icon: Grid3x3, route: '/neuro/memory-matrix' },
   { id: 'rapid_math', label: 'Rapid Math', sub: '45-s challenges', icon: Calculator, route: '/neuro/rapid-math' },
   { id: 'chess', label: 'Chess', sub: 'Strategic thinking', icon: Puzzle, route: null },
-  { id: 'schulte_table', label: 'Schulte Table', sub: 'Speed-reading training', icon: CalendarDays, route: null },
+  { id: 'schulte_table', label: 'Schulte Table', sub: 'Speed-reading training', icon: CalendarDays, route: '/neuro/schulte-table' },
 ]
+
+// Higher score is better for every game except Schulte Table, where score is elapsed
+// seconds — lower is better. Keep that one exception explicit rather than baking a
+// silent inversion into the generic aggregation below.
+const LOWER_IS_BETTER = new Set(['schulte_table'])
+
+function formatBest(gameId, value) {
+  if (value == null) return '—'
+  if (gameId === 'schulte_table') {
+    const m = Math.floor(value / 60)
+    const s = value % 60
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
+  return value.toLocaleString()
+}
 
 function computeStreak(dates) {
   const days = new Set(dates)
@@ -44,7 +59,10 @@ export default function NeuroPlusHome({ session }) {
         const best = {}
         const days = []
         for (const row of data || []) {
-          if (!(row.game_type in best)) best[row.game_type] = row.score
+          const better = LOWER_IS_BETTER.has(row.game_type)
+            ? !(row.game_type in best) || row.score < best[row.game_type]
+            : !(row.game_type in best) || row.score > best[row.game_type]
+          if (better) best[row.game_type] = row.score
           if (row.played_at) days.push(row.played_at.slice(0, 10))
         }
         setBestScores(best)
@@ -122,7 +140,7 @@ export default function NeuroPlusHome({ session }) {
                 <div className="flex items-center gap-xs pt-sm border-t border-base-border/50">
                   <Trophy size={13} className="text-ink-tertiary" />
                   <span className="text-caption text-ink-secondary font-mono">
-                    Best: {best != null ? best.toLocaleString() : '—'}
+                    Best: {formatBest(g.id, best)}
                   </span>
                 </div>
               </button>
