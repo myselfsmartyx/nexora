@@ -73,7 +73,7 @@ function OperationPicker() {
       </header>
       <main className="px-md pt-md pb-2xl flex flex-col gap-sm">
         <p className="text-body-small text-ink-secondary mb-sm">
-          Pick an operation. You'll get a fresh 45-second timer each round — answer as many as you can.
+          Pick an operation. You'll have 45 seconds total — answer as many problems as you can before time runs out.
         </p>
         {OPERATIONS.map((o) => (
           <button
@@ -164,7 +164,7 @@ function Game({ op, session }) {
       setScore((s) => s + 1)
       setProblem(generateProblem(op))
       setTyped('')
-      setTimeLeft(ROUND_SECONDS)
+      // Timer is NOT reset here — it's one 45s session, not 45s per question.
     } else {
       setWrongPulse(true)
       setTimeout(() => setWrongPulse(false), 300)
@@ -176,6 +176,28 @@ function Game({ op, session }) {
     if (gameOver) return
     setTyped((t) => (t.length >= 6 ? t : t + d))
   }
+
+  // Physical keyboard support — digits, Enter to submit, Backspace to edit, Escape to clear.
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (gameOver) return
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault()
+        pressDigit(e.key)
+      } else if (e.key === 'Enter') {
+        e.preventDefault()
+        submit()
+      } else if (e.key === 'Backspace') {
+        e.preventDefault()
+        setTyped((t) => t.slice(0, -1))
+      } else if (e.key === 'Escape') {
+        e.preventDefault()
+        setTyped('')
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [gameOver, submit])
 
   const progress = timeLeft / ROUND_SECONDS
   const dashOffset = RING_CIRCUMFERENCE * (1 - progress)
