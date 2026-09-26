@@ -16,6 +16,28 @@ function shuffledNumbers() {
   return nums
 }
 
+// Reshuffles only the not-yet-found numbers (value > justFoundTarget) among their own
+// slots, leaving already-found tiles exactly where they are.
+function reshuffleRemaining(board, justFoundTarget) {
+  const indices = []
+  const values = []
+  board.forEach((val, idx) => {
+    if (val > justFoundTarget) {
+      indices.push(idx)
+      values.push(val)
+    }
+  })
+  for (let i = values.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[values[i], values[j]] = [values[j], values[i]]
+  }
+  const next = [...board]
+  indices.forEach((idx, k) => {
+    next[idx] = values[k]
+  })
+  return next
+}
+
 function formatTime(seconds) {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
@@ -80,6 +102,7 @@ export default function SchulteTable({ session }) {
       if (target === GRID_N) {
         setDone(true)
       } else {
+        setBoard((b) => reshuffleRemaining(b, target))
         setTarget((t) => t + 1)
       }
     } else {
@@ -162,7 +185,7 @@ export default function SchulteTable({ session }) {
                       disabled={isFound}
                       className={`flex items-center justify-center rounded-lg text-[18px] font-bold w-full aspect-square min-w-[55px] min-h-[55px] transition-all active:scale-95 ${
                         isFound
-                          ? 'bg-primary/10 border border-primary/30 text-primary/50'
+                          ? 'bg-primary/20 border border-primary/50 text-primary'
                           : isWrong
                           ? 'bg-error/20 border border-error text-white'
                           : 'bg-base-elevated border border-base-border text-ink-primary'
