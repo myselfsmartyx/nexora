@@ -8,6 +8,8 @@ import Capture from './pages/Capture.jsx'
 import Journal from './pages/Journal.jsx'
 import NeuroPlusHome from './pages/NeuroPlusHome.jsx'
 import RapidMath from './pages/RapidMath.jsx'
+import MemoryMatrix from './pages/MemoryMatrix.jsx'
+import SchulteTable from './pages/SchulteTable.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 
 async function profileNeedsOnboarding(userId) {
@@ -91,6 +93,8 @@ export default function App() {
             <Route path="/neuro" element={<NeuroPlusHome session={session} />} />
             <Route path="/neuro/rapid-math" element={<RapidMath session={session} />} />
             <Route path="/neuro/rapid-math/:op" element={<RapidMath session={session} />} />
+            <Route path="/neuro/memory-matrix" element={<MemoryMatrix session={session} />} />
+            <Route path="/neuro/schulte-table" element={<SchulteTable session={session} />} />
             <Route
               path="/ai"
               element={
