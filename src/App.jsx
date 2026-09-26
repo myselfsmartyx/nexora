@@ -6,6 +6,8 @@ import Login from './pages/Login.jsx'
 import Onboarding from './pages/Onboarding.jsx'
 import Capture from './pages/Capture.jsx'
 import Journal from './pages/Journal.jsx'
+import NeuroPlusHome from './pages/NeuroPlusHome.jsx'
+import RapidMath from './pages/RapidMath.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 
 async function profileNeedsOnboarding(userId) {
@@ -86,12 +88,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
             <Route path="/capture" element={<Capture session={session} />} />
-            <Route
-              path="/neuro"
-              element={
-                <Placeholder title="Neuro Plus" subtitle="Train your brain daily." />
-              }
-            />
+            <Route path="/neuro" element={<NeuroPlusHome session={session} />} />
+            <Route path="/neuro/rapid-math" element={<RapidMath session={session} />} />
+            <Route path="/neuro/rapid-math/:op" element={<RapidMath session={session} />} />
             <Route
               path="/ai"
               element={
