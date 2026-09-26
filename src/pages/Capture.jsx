@@ -51,6 +51,7 @@ export default function Capture({ session }) {
   const [input, setInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState(null)
+  const [extractingIds, setExtractingIds] = useState(() => new Set())
 
   const searchRef = useRef(null)
   const fileRef = useRef(null)
@@ -69,7 +70,7 @@ export default function Capture({ session }) {
         .from('knowledge_items')
         .select('*')
         .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
+        .order('captured_at', { ascending: false })
         .limit(50)
       if (error) throw error
       setItems(data || [])
@@ -84,6 +85,30 @@ export default function Capture({ session }) {
     loadItems()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Calls the extract-content Edge Function for one item, then merges the
+  // AI-enriched row (title, category, tags, insights…) back into state.
+  async function runExtraction(itemId) {
+    setExtractingIds((prev) => new Set(prev).add(itemId))
+    try {
+      const { data, error } = await supabase.functions.invoke('extract-content', {
+        body: { item_id: itemId },
+      })
+      if (error) throw error
+      if (data?.error) throw new Error(data.error)
+      if (data?.item) {
+        setItems((prev) => prev.map((it) => (it.id === itemId ? data.item : it)))
+      }
+    } catch (err) {
+      showToast('AI extraction failed: ' + err.message)
+    } finally {
+      setExtractingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(itemId)
+        return next
+      })
+    }
+  }
 
   // Save a URL or text note
   async function handleCapture() {
@@ -116,9 +141,12 @@ export default function Capture({ session }) {
         })
         .select()
       if (error) throw error
-      if (data?.[0]) setItems((prev) => [data[0], ...prev])
+      if (data?.[0]) {
+        setItems((prev) => [data[0], ...prev])
+        showToast('Captured. Analyzing with AI…')
+        runExtraction(data[0].id)
+      }
       setInput('')
-      showToast('Captured. AI extraction arrives in Week 3.')
     } catch (err) {
       showToast('Save failed: ' + err.message)
     } finally {
@@ -160,8 +188,11 @@ export default function Capture({ session }) {
         })
         .select()
       if (error) throw error
-      if (data?.[0]) setItems((prev) => [data[0], ...prev])
-      showToast('File saved to your knowledge base.')
+      if (data?.[0]) {
+        setItems((prev) => [data[0], ...prev])
+        showToast('File saved. Analyzing with AI…')
+        runExtraction(data[0].id)
+      }
     } catch (err) {
       showToast('Upload failed: ' + err.message)
     }
@@ -264,7 +295,11 @@ export default function Capture({ session }) {
         {/* Stats line */}
         <div className="flex justify-between items-center text-caption text-ink-secondary">
           <span>{items.length} Capture{items.length === 1 ? '' : 's'} · Auto-categorized</span>
-          <span className="text-primary">AI labels coming Week 3</span>
+          {extractingIds.size > 0 && (
+            <span className="text-primary flex items-center gap-1">
+              <RefreshCw size={12} className="animate-spin" /> Analyzing {extractingIds.size}
+            </span>
+          )}
         </div>
 
         {/* Recent / Collections toggle */}
@@ -323,9 +358,15 @@ export default function Capture({ session }) {
                   key={item.id}
                   className="bg-base-surface rounded-card p-md border border-base-border/60 relative hover:border-primary/50 transition duration-300"
                 >
-                  <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold border mb-2 ${catStyle(item.category)}`}>
-                    {item.category || 'Uncategorized'}
-                  </span>
+                  {extractingIds.has(item.id) ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold border mb-2 bg-primary/10 text-primary border-primary/20">
+                      <RefreshCw size={10} className="animate-spin" /> Analyzing…
+                    </span>
+                  ) : (
+                    <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold border mb-2 ${catStyle(item.category)}`}>
+                      {item.category || 'Uncategorized'}
+                    </span>
+                  )}
                   <h3 className="text-h3 text-ink-primary mb-2">{item.title}</h3>
                   {insight && (
                     <div className="bg-primary/5 border border-primary/20 rounded-md p-2 mb-3">
@@ -344,7 +385,7 @@ export default function Capture({ session }) {
                   )}
                   <div className="flex justify-between items-center pt-2 border-t border-base-border/50">
                     <span className="text-xs text-ink-secondary flex items-center gap-1">
-                      <Icon size={14} /> Saved {timeAgo(item.created_at)}
+                      <Icon size={14} /> Saved {timeAgo(item.captured_at)}
                     </span>
                     <div className="flex gap-0.5">
                       {[1, 2, 3, 4, 5].map((n) => (
