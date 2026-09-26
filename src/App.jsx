@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav.jsx'
 import Login from './pages/Login.jsx'
 import Onboarding from './pages/Onboarding.jsx'
 import Capture from './pages/Capture.jsx'
+import Journal from './pages/Journal.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 
 async function profileNeedsOnboarding(userId) {
@@ -100,12 +101,7 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="/journal"
-              element={
-                <Placeholder title="My Journal" subtitle="Reflect. Track. Grow." />
-              }
-            />
+            <Route path="/journal" element={<Journal session={session} />} />
             <Route
               path="/growth"
               element={
