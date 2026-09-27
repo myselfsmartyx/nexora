@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase.js'
 const GAMES = [
   { id: 'memory_matrix', label: 'Memory Matrix', sub: 'Pattern recall', icon: Grid3x3, route: '/neuro/memory-matrix' },
   { id: 'rapid_math', label: 'Rapid Math', sub: '45-s challenges', icon: Calculator, route: '/neuro/rapid-math' },
-  { id: 'chess', label: 'Chess', sub: 'Strategic thinking', icon: Puzzle, route: null },
+  { id: 'chess', label: 'Chess', sub: 'Strategic thinking', icon: Puzzle, route: '/neuro/chess' },
   { id: 'schulte_table', label: 'Schulte Table', sub: 'Speed-reading training', icon: CalendarDays, route: '/neuro/schulte-table' },
 ]
 
@@ -21,6 +21,9 @@ function formatBest(gameId, value) {
     const m = Math.floor(value / 60)
     const s = value % 60
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
+  if (gameId === 'chess') {
+    return value === 2 ? 'Won a game' : value === 1 ? 'Best: draw' : 'No wins yet'
   }
   return value.toLocaleString()
 }
