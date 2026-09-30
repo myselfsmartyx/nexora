@@ -11,6 +11,7 @@ import RapidMath from './pages/RapidMath.jsx'
 import MemoryMatrix from './pages/MemoryMatrix.jsx'
 import SchulteTable from './pages/SchulteTable.jsx'
 import ChessGame from './pages/ChessGame.jsx'
+import PersonalDevelopment from './pages/PersonalDevelopment.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 
 async function profileNeedsOnboarding(userId) {
@@ -107,15 +108,7 @@ export default function App() {
               }
             />
             <Route path="/journal" element={<Journal session={session} />} />
-            <Route
-              path="/growth"
-              element={
-                <Placeholder
-                  title="Personal Growth"
-                  subtitle="Your personalized development engine."
-                />
-              }
-            />
+            <Route path="/growth" element={<PersonalDevelopment session={session} />} />
             <Route path="*" element={<Navigate to="/capture" replace />} />
           </Routes>
         </main>
