@@ -152,14 +152,11 @@ function todaysCompass(goals) {
 
 function todaysWords() {
   const d = dayNumber()
+  const n = VOCAB_BANK.length
+  const start = ((d * 5) % n + n) % n
   const picks = []
-  const seen = new Set()
-  for (let i = 0; seen.size < 5; i++) {
-    const idx = (d * 5 + i * 13) % VOCAB_BANK.length
-    if (!seen.has(idx)) {
-      seen.add(idx)
-      picks.push(VOCAB_BANK[idx])
-    }
+  for (let i = 0; i < 5 && i < n; i++) {
+    picks.push(VOCAB_BANK[(start + i) % n])
   }
   return picks
 }
