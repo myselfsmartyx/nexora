@@ -12,7 +12,7 @@ import MemoryMatrix from './pages/MemoryMatrix.jsx'
 import SchulteTable from './pages/SchulteTable.jsx'
 import ChessGame from './pages/ChessGame.jsx'
 import PersonalDevelopment from './pages/PersonalDevelopment.jsx'
-import Placeholder from './pages/Placeholder.jsx'
+import AiChat from './pages/AiChat.jsx'
 
 async function profileNeedsOnboarding(userId) {
   try {
@@ -98,15 +98,7 @@ export default function App() {
             <Route path="/neuro/memory-matrix" element={<MemoryMatrix session={session} />} />
             <Route path="/neuro/schulte-table" element={<SchulteTable session={session} />} />
             <Route path="/neuro/chess" element={<ChessGame session={session} />} />
-            <Route
-              path="/ai"
-              element={
-                <Placeholder
-                  title="AI Companion"
-                  subtitle="Practical, execution-oriented guidance."
-                />
-              }
-            />
+            <Route path="/ai" element={<AiChat session={session} />} />
             <Route path="/journal" element={<Journal session={session} />} />
             <Route path="/growth" element={<PersonalDevelopment session={session} />} />
             <Route path="*" element={<Navigate to="/capture" replace />} />
