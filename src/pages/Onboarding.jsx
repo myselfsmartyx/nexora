@@ -135,11 +135,14 @@ export default function Onboarding({ session, onComplete }) {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({
-          onboarding_answers: finalAnswers,
-          goals: finalAnswers.goals || [],
-        })
-        .eq('id', session.user.id)
+        .upsert(
+          {
+            id: session.user.id,
+            onboarding_answers: finalAnswers,
+            goals: finalAnswers.goals || [],
+          },
+          { onConflict: 'id' }
+        )
       if (error) throw error
       onComplete()
     } catch (err) {
