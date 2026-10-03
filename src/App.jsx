@@ -22,8 +22,9 @@ async function profileNeedsOnboarding(userId) {
       .eq('id', userId)
       .maybeSingle()
     if (error) throw error
-    // New users (trigger-created row, no answers yet) → onboard
-    return !data || data.onboarding_answers == null
+    // No row, or the trigger-created row whose answers are still the default {} → onboard
+    const a = data?.onboarding_answers
+    return !data || a == null || (typeof a === 'object' && Object.keys(a).length === 0)
   } catch (err) {
     // Fail open: never lock a user out because of a read error
     console.warn('Onboarding check failed, letting user in:', err.message)
