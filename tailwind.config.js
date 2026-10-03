@@ -9,20 +9,20 @@ export default {
       colors: {
         // Nexora Design System (from Google Stitch)
         primary: {
-          DEFAULT: '#00D4AA',
-          dark: '#00B894',
+          DEFAULT: 'rgb(var(--c-primary) / <alpha-value>)',
+          dark: 'rgb(var(--c-primary-dark) / <alpha-value>)',
         },
         secondary: '#6366F1',
         base: {
-          bg: '#0A0A0F',
-          surface: '#161B22',
-          elevated: '#1C2128',
-          border: '#30363D',
+          bg: 'rgb(var(--c-bg) / <alpha-value>)',
+          surface: 'rgb(var(--c-surface) / <alpha-value>)',
+          elevated: 'rgb(var(--c-elevated) / <alpha-value>)',
+          border: 'rgb(var(--c-border) / <alpha-value>)',
         },
         ink: {
-          primary: '#E6EDF3',
-          secondary: '#8B949E',
-          tertiary: '#484F58',
+          primary: 'rgb(var(--c-ink) / <alpha-value>)',
+          secondary: 'rgb(var(--c-ink-2) / <alpha-value>)',
+          tertiary: 'rgb(var(--c-ink-3) / <alpha-value>)',
         },
         success: '#10B981',
         warning: '#F59E0B',
@@ -55,8 +55,8 @@ export default {
         '2xl': '48px',
       },
       boxShadow: {
-        card: '0 1px 0 0 #30363D inset, 0 4px 12px rgba(0,0,0,0.3)',
-        glow: '0 0 24px rgba(0, 212, 170, 0.15)',
+        card: '0 1px 0 0 rgb(var(--c-border)) inset, 0 4px 12px rgb(0 0 0 / var(--shadow-alpha))',
+        glow: '0 0 24px rgb(var(--c-primary) / 0.15)',
       },
       transitionDuration: {
         fast: '200ms',
