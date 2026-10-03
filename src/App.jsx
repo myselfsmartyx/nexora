@@ -13,6 +13,9 @@ import SchulteTable from './pages/SchulteTable.jsx'
 import ChessGame from './pages/ChessGame.jsx'
 import PersonalDevelopment from './pages/PersonalDevelopment.jsx'
 import AiChat from './pages/AiChat.jsx'
+import Settings from './pages/Settings.jsx'
+import AppLock from './components/AppLock.jsx'
+import { applyTheme } from './lib/theme.js'
 
 async function profileNeedsOnboarding(userId) {
   try {
@@ -59,6 +62,24 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Apply the user's saved theme/accent from their account (cached copy already applied at startup)
+  const signedInUserId = session?.user?.id
+  useEffect(() => {
+    if (!signedInUserId) return
+    let cancelled = false
+    supabase
+      .from('user_settings')
+      .select('dark_mode, accent_color')
+      .eq('user_id', signedInUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data) applyTheme({ mode: data.dark_mode, accent: data.accent_color })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [signedInUserId])
+
   // Splash while we check the session
   if (checking) {
     return (
@@ -75,17 +96,22 @@ export default function App() {
     return <Login />
   }
 
+  const lockForgot = () => supabase.auth.signOut()
+
   // Signed in but never onboarded → 15-question flow
   if (needsOnboarding) {
     return (
-      <Onboarding
-        session={session}
-        onComplete={() => setNeedsOnboarding(false)}
-      />
+      <AppLock userId={session.user.id} onForgot={lockForgot}>
+        <Onboarding
+          session={session}
+          onComplete={() => setNeedsOnboarding(false)}
+        />
+      </AppLock>
     )
   }
 
   return (
+    <AppLock userId={session.user.id} onForgot={lockForgot}>
     <BrowserRouter>
       {/* Mobile-first app frame: centered column on desktop, full-width on phone */}
       <div className="min-h-screen bg-base-bg">
@@ -100,6 +126,8 @@ export default function App() {
             <Route path="/neuro/schulte-table" element={<SchulteTable session={session} />} />
             <Route path="/neuro/chess" element={<ChessGame session={session} />} />
             <Route path="/ai" element={<AiChat session={session} />} />
+            <Route path="/settings" element={<Settings session={session} />} />
+            <Route path="/settings/:section" element={<Settings session={session} />} />
             <Route path="/journal" element={<Journal session={session} />} />
             <Route path="/growth" element={<PersonalDevelopment session={session} />} />
             <Route path="*" element={<Navigate to="/capture" replace />} />
@@ -108,5 +136,6 @@ export default function App() {
         <BottomNav />
       </div>
     </BrowserRouter>
+    </AppLock>
   )
 }
