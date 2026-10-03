@@ -33,9 +33,9 @@ function rememberNoticeDismissed() {
 async function readInvokeError(error) {
   try {
     const body = await error.context.json()
-    return body?.error || error.message
+    return { message: body?.error || error.message, code: body?.code }
   } catch {
-    return error.message
+    return { message: error.message }
   }
 }
 
@@ -98,6 +98,7 @@ export default function AiChat({ session }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [lastFailed, setLastFailed] = useState(null) // text to retry
+  const [remaining, setRemaining] = useState(null) // messages left in today's allowance
   const [showNotice, setShowNotice] = useState(() => !noticeDismissed())
   const [listening, setListening] = useState(false)
 
@@ -204,15 +205,28 @@ export default function AiChat({ session }) {
         const { data, error: fnErr } = await supabase.functions.invoke('ai-chat', {
           body: { conversation_id: convoId, message: text },
         })
-        if (fnErr) throw new Error(await readInvokeError(fnErr))
+        if (fnErr) {
+          const info = await readInvokeError(fnErr)
+          const e = new Error(info.message)
+          e.code = info.code
+          throw e
+        }
         if (!data?.reply) throw new Error('Empty reply')
+        if (typeof data.remaining === 'number') setRemaining(data.remaining)
 
         setMessages((m) => [...m, { id: 'ai-' + Date.now(), role: 'assistant', content: data.reply }])
       } catch (err) {
         console.warn('AI chat failed:', err.message)
         setMessages((m) => m.filter((x) => x.id !== tempId))
-        setLastFailed(text)
-        setError("Couldn't reach Nexora AI. Check your connection and try again.")
+        if (err.code === 'daily_limit' || err.code === 'rate_limited') {
+          // Server-written, user-safe message. Keep the draft so nothing is lost; no Retry button.
+          setInput(text)
+          setError(err.message)
+          if (err.code === 'daily_limit') setRemaining(0)
+        } else {
+          setLastFailed(text)
+          setError("Couldn't reach Nexora AI. Check your connection and try again.")
+        }
       } finally {
         setSending(false)
       }
@@ -332,6 +346,13 @@ export default function AiChat({ session }) {
 
       {/* Composer */}
       <div className="px-md pb-sm pt-sm border-t border-base-border/60 bg-base-bg">
+        {remaining !== null && remaining <= 5 && (
+          <p className={`text-caption mb-xs text-center ${remaining === 0 ? 'text-error' : 'text-ink-tertiary'}`}>
+            {remaining === 0
+              ? 'No AI messages left for now'
+              : `${remaining} AI message${remaining === 1 ? '' : 's'} left today`}
+          </p>
+        )}
         <div className="card input-glow flex items-end p-xs rounded-2xl">
           {SpeechRecognition && (
             <button
