@@ -3,6 +3,7 @@ import {
   Search, Settings, Sparkles, FileText, Link2, FileUp, Mic, Share2,
   RefreshCw, Clock, Inbox,
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 
 // ---------- helpers (pure functions — nothing here can crash React) ----------
@@ -56,6 +57,8 @@ export default function Capture({ session }) {
   const searchRef = useRef(null)
   const fileRef = useRef(null)
   const toastTimer = useRef(null)
+
+  const navigate = useNavigate()
 
   function showToast(msg) {
     setToast(msg)
@@ -230,7 +233,7 @@ export default function Capture({ session }) {
           </button>
           <button
             aria-label="Settings"
-            onClick={() => showToast('Settings screen is coming in the next update.')}
+            onClick={() => navigate('/settings')}
             className="text-ink-secondary hover:text-primary transition duration-200"
           >
             <Settings size={22} />
@@ -281,7 +284,7 @@ export default function Capture({ session }) {
         <input ref={fileRef} type="file" accept="application/pdf,image/*" className="hidden" onChange={handleFile} />
 
         {/* AI knowledge search */}
-        <div className="bg-[#0D0D14] border-l-2 border-primary rounded-r-input flex items-center px-4 py-3 border-y-transparent border-r-transparent">
+        <div className="bg-[rgb(var(--c-deep))] border-l-2 border-primary rounded-r-input flex items-center px-4 py-3 border-y-transparent border-r-transparent">
           <Search size={20} className="text-ink-secondary mr-2 shrink-0" />
           <input
             ref={searchRef}
