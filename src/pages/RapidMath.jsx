@@ -249,13 +249,13 @@ function Game({ op, session }) {
             {/* Timer ring */}
             <div className="relative w-20 h-20 mt-lg flex items-center justify-center">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r={RING_RADIUS} fill="none" stroke="#1A1A24" strokeWidth="4" />
+                <circle cx="40" cy="40" r={RING_RADIUS} fill="none" style={{ stroke: 'rgb(var(--c-border, 48 54 61))' }} strokeWidth="4" />
                 <circle
                   cx="40"
                   cy="40"
                   r={RING_RADIUS}
                   fill="none"
-                  stroke="#00D4AA"
+                  style={{ stroke: 'rgb(var(--c-primary, 0 212 170))' }}
                   strokeWidth="4"
                   strokeLinecap="round"
                   strokeDasharray={RING_CIRCUMFERENCE}

@@ -9,20 +9,20 @@ export default {
       colors: {
         // Nexora Design System (from Google Stitch)
         primary: {
-          DEFAULT: 'rgb(var(--c-primary) / <alpha-value>)',
-          dark: 'rgb(var(--c-primary-dark) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--c-primary, 0 212 170) / <alpha-value>)',
+          dark: 'rgb(var(--c-primary-dark, 0 184 148) / <alpha-value>)',
         },
         secondary: '#6366F1',
         base: {
-          bg: 'rgb(var(--c-bg) / <alpha-value>)',
-          surface: 'rgb(var(--c-surface) / <alpha-value>)',
-          elevated: 'rgb(var(--c-elevated) / <alpha-value>)',
-          border: 'rgb(var(--c-border) / <alpha-value>)',
+          bg: 'rgb(var(--c-bg, 10 10 15) / <alpha-value>)',
+          surface: 'rgb(var(--c-surface, 22 27 34) / <alpha-value>)',
+          elevated: 'rgb(var(--c-elevated, 28 33 40) / <alpha-value>)',
+          border: 'rgb(var(--c-border, 48 54 61) / <alpha-value>)',
         },
         ink: {
-          primary: 'rgb(var(--c-ink) / <alpha-value>)',
-          secondary: 'rgb(var(--c-ink-2) / <alpha-value>)',
-          tertiary: 'rgb(var(--c-ink-3) / <alpha-value>)',
+          primary: 'rgb(var(--c-ink, 230 237 243) / <alpha-value>)',
+          secondary: 'rgb(var(--c-ink-2, 139 148 158) / <alpha-value>)',
+          tertiary: 'rgb(var(--c-ink-3, 72 79 88) / <alpha-value>)',
         },
         success: '#10B981',
         warning: '#F59E0B',
@@ -55,8 +55,8 @@ export default {
         '2xl': '48px',
       },
       boxShadow: {
-        card: '0 1px 0 0 rgb(var(--c-border)) inset, 0 4px 12px rgb(0 0 0 / var(--shadow-alpha))',
-        glow: '0 0 24px rgb(var(--c-primary) / 0.15)',
+        card: '0 1px 0 0 rgb(var(--c-border, 48 54 61)) inset, 0 4px 12px rgb(0 0 0 / var(--shadow-alpha, 0.3))',
+        glow: '0 0 24px rgb(var(--c-primary, 0 212 170) / 0.15)',
       },
       transitionDuration: {
         fast: '200ms',

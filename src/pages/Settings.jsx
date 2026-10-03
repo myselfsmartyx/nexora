@@ -11,10 +11,10 @@ import {
   isLockEnabled, setPin, verifyPin, disableLock, isValidPin, MIN_PIN, MAX_PIN,
 } from '../lib/appLock.js'
 
-const APP_VERSION = '0.1.0'
+const APP_VERSION = '0.2.0'
 
 const DEFAULTS = {
-  dark_mode: 'system',
+  dark_mode: 'dark',
   accent_color: '#00d4aa',
   push_notifications: true,
   vocab_reminders: true,
@@ -26,9 +26,9 @@ const SETTING_KEYS = Object.keys(DEFAULTS)
 const MODES = [
   { id: 'system', label: 'System', icon: Monitor },
   { id: 'dark', label: 'Dark', icon: Moon },
-  { id: 'light', label: 'Light', icon: Sun },
+  { id: 'light', label: 'Light (beta)', icon: Sun },
 ]
-const modeLabel = (id) => MODES.find((m) => m.id === id)?.label || 'System'
+const modeLabel = (id) => MODES.find((m) => m.id === id)?.label || 'Dark'
 
 // ---------- data hook ----------
 function useUserSettings(userId) {
@@ -323,7 +323,7 @@ function AppearanceSection({ settings, update, notify }) {
             )
           })}
         </div>
-        <p className="text-caption text-ink-tertiary mt-sm px-xs">System follows your device's light/dark setting.</p>
+        <p className="text-caption text-ink-tertiary mt-sm px-xs">Nexora is designed dark-first. Light mode is new and some screens are still being polished. System follows your device.</p>
       </div>
 
       <div>

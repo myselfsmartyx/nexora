@@ -15,6 +15,7 @@ import PersonalDevelopment from './pages/PersonalDevelopment.jsx'
 import AiChat from './pages/AiChat.jsx'
 import Settings from './pages/Settings.jsx'
 import AppLock from './components/AppLock.jsx'
+import Sidebar from './components/Sidebar.jsx'
 import { applyTheme } from './lib/theme.js'
 
 async function profileNeedsOnboarding(userId) {
@@ -114,8 +115,9 @@ export default function App() {
     <AppLock userId={session.user.id} onForgot={lockForgot}>
     <BrowserRouter>
       {/* Mobile-first app frame: centered column on desktop, full-width on phone */}
-      <div className="min-h-screen bg-base-bg">
-        <main className="max-w-md mx-auto min-h-screen pb-24">
+      <div className="min-h-screen bg-base-bg lg:pl-64">
+        <Sidebar />
+        <main className="max-w-md lg:max-w-3xl mx-auto min-h-screen pb-24 lg:pb-10">
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
             <Route path="/capture" element={<Capture session={session} />} />

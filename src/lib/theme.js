@@ -1,7 +1,7 @@
 // Theme engine: mode (system | dark | light) + accent color.
 // Colors live in CSS variables (see index.css); this module only sets them.
 
-const CACHE_KEY = 'nexora_theme_v1'
+const CACHE_KEY = 'nexora_theme_v2' // v2: discards the earlier 'system' default
 const DEFAULT_ACCENT = '#00D4AA'
 const HEX = /^#[0-9a-fA-F]{6}$/
 
@@ -28,10 +28,11 @@ export function resolveMode(mode) {
   }
 }
 
-let current = { mode: 'system', accent: DEFAULT_ACCENT }
+let current = { mode: 'dark', accent: DEFAULT_ACCENT }
 
-export function applyTheme({ mode = 'system', accent = DEFAULT_ACCENT } = {}) {
-  const safeMode = ['system', 'dark', 'light'].includes(mode) ? mode : 'system'
+export function applyTheme({ mode = 'dark', accent = DEFAULT_ACCENT } = {}) {
+  // Nexora is designed dark-first: anything unknown falls back to dark, never to the OS setting.
+  const safeMode = ['system', 'dark', 'light'].includes(mode) ? mode : 'dark'
   const safeAccent = HEX.test(accent) ? accent : DEFAULT_ACCENT
   current = { mode: safeMode, accent: safeAccent }
 

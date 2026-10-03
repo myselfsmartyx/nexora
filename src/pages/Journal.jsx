@@ -293,7 +293,7 @@ export default function Journal({ session }) {
       <button
         aria-label="New Journal Entry"
         onClick={openComposer}
-        className="fixed right-md bottom-[calc(80px+16px)] w-14 h-14 bg-primary text-base-bg rounded-full shadow-glow flex items-center justify-center transition-transform active:scale-95 z-40"
+        className="fixed right-md bottom-[calc(80px+16px)] lg:right-10 lg:bottom-10 w-14 h-14 bg-primary text-base-bg rounded-full shadow-glow flex items-center justify-center transition-transform active:scale-95 z-40"
       >
         <PenLine size={24} />
       </button>
@@ -307,7 +307,7 @@ export default function Journal({ session }) {
 
       {/* Composer — full-screen overlay, matches Stitch "New Entry" screen */}
       {composerOpen && (
-        <div className="fixed inset-0 z-[60] bg-base-bg flex flex-col max-w-md mx-auto">
+        <div className="fixed inset-0 z-[60] bg-base-bg flex flex-col max-w-md lg:max-w-3xl mx-auto">
           <header
             className="flex justify-between items-center px-md h-16 shrink-0"
             style={{ paddingTop: 'env(safe-area-inset-top)' }}

@@ -160,13 +160,13 @@ export default function SchulteTable({ session }) {
 
             <div className="relative w-full max-w-[360px] flex items-center justify-center mt-xl">
               <svg className="absolute inset-0 w-full h-full pointer-events-none -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r={RADIUS} fill="none" stroke="#161B22" strokeWidth="2" />
+                <circle cx="50" cy="50" r={RADIUS} fill="none" style={{ stroke: 'rgb(var(--c-border, 48 54 61))' }} strokeWidth="2" />
                 <circle
                   cx="50"
                   cy="50"
                   r={RADIUS}
                   fill="none"
-                  stroke="#00D4AA"
+                  style={{ stroke: 'rgb(var(--c-primary, 0 212 170))' }}
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeDasharray={CIRCUMFERENCE}
@@ -187,7 +187,7 @@ export default function SchulteTable({ session }) {
                         isFound
                           ? 'bg-primary/20 border border-primary/50 text-primary'
                           : isWrong
-                          ? 'bg-error/20 border border-error text-white'
+                          ? 'bg-error/20 border border-error text-error'
                           : 'bg-base-elevated border border-base-border text-ink-primary'
                       }`}
                     >

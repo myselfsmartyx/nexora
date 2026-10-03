@@ -265,7 +265,7 @@ export default function AiChat({ session }) {
 
   return (
     // main already reserves 96px for the bottom nav; this fills the rest exactly
-    <div className="flex flex-col h-[calc(100dvh-6rem)]">
+    <div className="flex flex-col h-[calc(100dvh-6rem)] lg:h-[100dvh]">
       {/* Top bar */}
       <header className="flex items-center justify-between px-md py-sm border-b border-base-border bg-base-bg/80 backdrop-blur">
         <div className="flex items-center gap-xs text-primary">
