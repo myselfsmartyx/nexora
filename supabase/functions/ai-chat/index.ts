@@ -362,8 +362,12 @@ Deno.serve(async (req: Request) => {
   // Sources shown to the user = saved items that were actually matched for this message.
   const sources = detailed.slice(0, 5).map((k) => ({ id: k.id as string, title: String(k.title || "Untitled") }));
 
+  // The supabase client RETURNS errors instead of throwing, so check them explicitly — an
+  // unchecked insert is exactly how chat history silently failed to save before.
+  // (last_message_at / message_count are maintained by the on_ai_message_insert trigger.)
+  let saved = true;
   try {
-    await supabase.from("ai_messages").insert([
+    const { error: saveErr } = await supabase.from("ai_messages").insert([
       { user_id: user.id, conversation_id, role: "user", content: message },
       {
         user_id: user.id,
@@ -375,16 +379,18 @@ Deno.serve(async (req: Request) => {
         referenced_items: sources.map((s) => s.id),
       },
     ]);
-    await supabase
-      .from("ai_conversations")
-      .update({ last_message_at: new Date().toISOString() })
-      .eq("id", conversation_id);
+    if (saveErr) {
+      saved = false;
+      console.error("ai-chat: failed to persist messages:", saveErr.message);
+    }
   } catch (err) {
-    console.warn("ai-chat: failed to persist messages:", (err as Error).message);
+    saved = false;
+    console.error("ai-chat: failed to persist messages:", (err as Error).message);
   }
 
   return jsonResponse({
     reply,
+    saved,
     sources,
     response_time_ms: responseTimeMs,
     limit: dailyLimit,
