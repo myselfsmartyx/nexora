@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Sparkles, Plus, Info, X, ArrowUp, Mic, RotateCcw, PanelLeft, Loader2 } from 'lucide-react'
+import { Sparkles, Plus, Info, X, ArrowUp, Mic, RotateCcw, PanelLeft, PanelLeftClose, PanelLeftOpen, Loader2 } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
 import { invokeFn } from '../lib/api.js'
 import {
@@ -37,6 +37,15 @@ function rememberNoticeDismissed() {
   }
 }
 
+const SIDEBAR_KEY = 'nexora_ai_sidebar_collapsed'
+function readSidebarCollapsed() {
+  try {
+    return localStorage.getItem(SIDEBAR_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 const SpeechRecognition =
   typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null
 
@@ -67,7 +76,8 @@ export default function AiChat({ session }) {
   const [convosLoading, setConvosLoading] = useState(true)
   const [hasMoreConvos, setHasMoreConvos] = useState(false)
   const [loadingMoreConvos, setLoadingMoreConvos] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false) // phone drawer
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(readSidebarCollapsed) // desktop dock
 
   // active chat
   const [conversationId, setConversationId] = useState(null)
@@ -155,6 +165,20 @@ export default function AiChat({ session }) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [sidebarOpen])
+
+  // One button for everything: collapses/expands the docked sidebar on desktop,
+  // opens the slide-over drawer on phones.
+  const toggleSidebar = () => {
+    if (window.matchMedia?.('(min-width: 1024px)').matches) {
+      setSidebarCollapsed((prev) => {
+        const next = !prev
+        try { localStorage.setItem(SIDEBAR_KEY, next ? '1' : '0') } catch { /* ignore */ }
+        return next
+      })
+    } else {
+      setSidebarOpen(true)
+    }
+  }
 
   const dismissNotice = () => {
     setShowNotice(false)
@@ -449,6 +473,7 @@ export default function AiChat({ session }) {
         hasMore={hasMoreConvos}
         loadingMore={loadingMoreConvos}
         open={sidebarOpen}
+        collapsed={sidebarCollapsed}
         disabled={sending}
         onClose={() => setSidebarOpen(false)}
         onSelect={openConversation}
@@ -464,11 +489,17 @@ export default function AiChat({ session }) {
         <header className="flex items-center justify-between px-md py-sm border-b border-base-border bg-base-bg/80 backdrop-blur">
           <div className="flex items-center gap-sm min-w-0">
             <button
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open chat history"
-              className="lg:hidden text-ink-secondary hover:text-primary transition-colors"
+              onClick={toggleSidebar}
+              aria-label={sidebarCollapsed ? 'Show chat history' : 'Hide chat history'}
+              title={sidebarCollapsed ? 'Show chat history' : 'Hide chat history'}
+              className="text-ink-secondary hover:text-primary transition-colors"
             >
-              <PanelLeft size={22} />
+              <PanelLeft size={22} className="lg:hidden" />
+              {sidebarCollapsed ? (
+                <PanelLeftOpen size={22} className="hidden lg:block" />
+              ) : (
+                <PanelLeftClose size={22} className="hidden lg:block" />
+              )}
             </button>
             <div className="flex items-center gap-xs text-primary">
               <Sparkles size={20} fill="currentColor" />
@@ -478,7 +509,7 @@ export default function AiChat({ session }) {
           <button
             onClick={startNewChat}
             disabled={sending}
-            className="lg:hidden flex items-center gap-xs text-ink-secondary hover:text-ink-primary disabled:opacity-40 transition-colors duration-200"
+            className={`${sidebarCollapsed ? '' : 'lg:hidden'} flex items-center gap-xs text-ink-secondary hover:text-ink-primary disabled:opacity-40 transition-colors duration-200`}
           >
             <Plus size={16} />
             <span className="text-caption uppercase tracking-wider font-semibold">New Chat</span>
