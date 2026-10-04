@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './lib/supabase.js'
 import BottomNav from './components/BottomNav.jsx'
 import Login from './pages/Login.jsx'
@@ -35,6 +35,17 @@ async function profileNeedsOnboarding(userId) {
     console.warn('Onboarding check failed, letting user in:', err.message)
     return false
   }
+}
+
+// Page frame. The AI Companion gets a wider column on desktop so its chat-history sidebar fits.
+function Frame({ children }) {
+  const { pathname } = useLocation()
+  const wide = pathname === '/ai' || pathname.startsWith('/ai/')
+  return (
+    <main className={`max-w-md ${wide ? 'lg:max-w-6xl' : 'lg:max-w-3xl'} mx-auto min-h-screen pb-24 lg:pb-10`}>
+      {children}
+    </main>
+  )
 }
 
 export default function App() {
@@ -118,7 +129,7 @@ export default function App() {
       {/* Mobile-first app frame: centered column on desktop, full-width on phone */}
       <div className="min-h-screen bg-base-bg lg:pl-64">
         <Sidebar />
-        <main className="max-w-md lg:max-w-3xl mx-auto min-h-screen pb-24 lg:pb-10">
+        <Frame>
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
             <Route path="/capture" element={<Capture session={session} />} />
@@ -136,7 +147,7 @@ export default function App() {
             <Route path="/growth" element={<PersonalDevelopment session={session} />} />
             <Route path="*" element={<Navigate to="/capture" replace />} />
           </Routes>
-        </main>
+        </Frame>
         <BottomNav />
       </div>
     </BrowserRouter>
