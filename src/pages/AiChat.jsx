@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Sparkles, Plus, Info, X, ArrowUp, Mic, RotateCcw } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
 
@@ -90,6 +91,8 @@ function Typing() {
 
 export default function AiChat({ session }) {
   const userId = session.user.id
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const [conversationId, setConversationId] = useState(null)
   const [messages, setMessages] = useState([]) // { id, role, content }
@@ -139,6 +142,17 @@ export default function AiChat({ session }) {
     return () => {
       cancelled = true
     }
+  }, [])
+
+  // "Ask AI" from a saved item / search hands us a ready-made question: drop it in the box.
+  useEffect(() => {
+    const prefill = location.state?.prefill
+    if (typeof prefill === 'string' && prefill.trim()) {
+      setInput(prefill.slice(0, MAX_CHARS))
+      navigate(location.pathname, { replace: true, state: null })
+      setTimeout(() => textareaRef.current?.focus(), 50)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Keep newest message in view.
