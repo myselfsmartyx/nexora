@@ -4,6 +4,7 @@ import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
 import { initTheme } from './lib/theme.js'
+import { registerServiceWorker } from './lib/pwa.js'
 
 // Apply the saved theme before first paint so there's no dark/light flash.
 initTheme()
@@ -15,3 +16,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ErrorBoundary>
   </React.StrictMode>
 )
+
+registerServiceWorker()
