@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav.jsx'
 import Login from './pages/Login.jsx'
 import Onboarding from './pages/Onboarding.jsx'
 import Capture from './pages/Capture.jsx'
+import KnowledgeDetail from './pages/KnowledgeDetail.jsx'
 import Journal from './pages/Journal.jsx'
 import NeuroPlusHome from './pages/NeuroPlusHome.jsx'
 import RapidMath from './pages/RapidMath.jsx'
@@ -121,6 +122,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/capture" replace />} />
             <Route path="/capture" element={<Capture session={session} />} />
+            <Route path="/capture/:id" element={<KnowledgeDetail session={session} />} />
             <Route path="/neuro" element={<NeuroPlusHome session={session} />} />
             <Route path="/neuro/rapid-math" element={<RapidMath session={session} />} />
             <Route path="/neuro/rapid-math/:op" element={<RapidMath session={session} />} />
