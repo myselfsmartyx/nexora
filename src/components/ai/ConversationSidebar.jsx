@@ -80,7 +80,7 @@ function Row({ c, active, snippet, menuOpen, renaming, disabled, onSelect, onMen
 
 // Docked on desktop, slide-over drawer on phones.
 export default function ConversationSidebar({
-  userId, conversations, activeId, loading, hasMore, loadingMore, open, disabled,
+  userId, conversations, activeId, loading, hasMore, loadingMore, open, collapsed = false, disabled,
   onClose, onSelect, onNew, onRename, onTogglePin, onDelete, onLoadMore,
 }) {
   const [query, setQuery] = useState('')
@@ -151,7 +151,7 @@ export default function ConversationSidebar({
 
   return (
     <aside
-      className={`${open ? 'fixed inset-y-0 left-0 z-[60] flex' : 'hidden'} lg:static lg:flex lg:z-auto w-80 max-w-[85vw] lg:w-72 lg:max-w-none shrink-0 flex-col bg-base-surface border-r border-base-border`}
+      className={`${open ? 'fixed inset-y-0 left-0 z-[60] flex' : 'hidden'} ${collapsed ? 'lg:hidden' : 'lg:static lg:flex lg:z-auto'} w-80 max-w-[85vw] lg:w-72 lg:max-w-none shrink-0 flex-col bg-base-surface border-r border-base-border`}
       style={open ? { paddingTop: 'env(safe-area-inset-top)' } : undefined}
       aria-label="Chat history"
     >
