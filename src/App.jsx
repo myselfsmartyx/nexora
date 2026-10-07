@@ -143,7 +143,7 @@ export default function App() {
             <Route path="/ai" element={<AiChat session={session} />} />
             <Route path="/settings" element={<Settings session={session} />} />
             <Route path="/settings/:section" element={<Settings session={session} />} />
-            <Route path="/journal" element={<Journal session={session} />} />
+            <Route path="/journal/*" element={<Journal session={session} />} />
             <Route path="/growth" element={<PersonalDevelopment session={session} />} />
             <Route path="*" element={<Navigate to="/capture" replace />} />
           </Routes>
