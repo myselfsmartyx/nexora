@@ -3,6 +3,7 @@ import {
   Compass, Wrench, BookOpen, RefreshCw, Sparkles, Plus, Check, Brain, Dumbbell,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
+import PhysicalTab from '../components/physical/PhysicalTab.jsx'
 
 // ---- Curated content banks -------------------------------------------------
 // Everything below is hand-written, rule-based personalization (filtered by
@@ -397,14 +398,7 @@ export default function PersonalDevelopment({ session }) {
         </div>
 
         {tab === 'physical' ? (
-          <div className="card p-lg text-center flex flex-col items-center gap-sm">
-            <Dumbbell size={28} className="text-ink-tertiary" />
-            <h3 className="text-h3 text-ink-primary">Physical is coming later</h3>
-            <p className="text-body-small text-ink-secondary leading-relaxed max-w-xs">
-              This needs its own onboarding (age, weight, activity level) that we haven't built yet — it's a
-              separate, honest chunk of work rather than a quick add-on to this screen.
-            </p>
-          </div>
+          <PhysicalTab session={session} />
         ) : (
           <>
             {/* Today's Compass */}
