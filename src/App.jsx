@@ -15,6 +15,7 @@ import ChessGame from './pages/ChessGame.jsx'
 import PersonalDevelopment from './pages/PersonalDevelopment.jsx'
 import AiChat from './pages/AiChat.jsx'
 import Settings from './pages/Settings.jsx'
+import Upgrade, { UpgradeDone } from './pages/Upgrade.jsx'
 import AppLock from './components/AppLock.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import { applyTheme } from './lib/theme.js'
@@ -144,6 +145,8 @@ export default function App() {
             <Route path="/settings" element={<Settings session={session} />} />
             <Route path="/settings/:section" element={<Settings session={session} />} />
             <Route path="/journal/*" element={<Journal session={session} />} />
+            <Route path="/upgrade" element={<Upgrade session={session} />} />
+            <Route path="/upgrade/done" element={<UpgradeDone />} />
             <Route path="/growth" element={<PersonalDevelopment session={session} />} />
             <Route path="*" element={<Navigate to="/capture" replace />} />
           </Routes>
