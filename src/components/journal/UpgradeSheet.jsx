@@ -1,6 +1,7 @@
 import { Check, Crown, Sparkles } from 'lucide-react'
 import { Sheet } from './ui.jsx'
 import { FREE, PRO } from '../../lib/journal/constants.js'
+import { TRIAL_DAYS } from '../../lib/billing/plans.js'
 
 // What the person ran into → a calm, specific explanation (never a wall, never a guilt trip).
 const REASONS = {
@@ -47,7 +48,7 @@ export default function UpgradeSheet({ reason, onClose, onUpgrade }) {
     <Sheet open onClose={onClose} tall
       footer={
         <div className="flex flex-col gap-sm">
-          <button className="btn-primary w-full py-3.5 flex items-center justify-center gap-2" onClick={onUpgrade}><Crown size={16} /> See Pro plans</button>
+          <button className="btn-primary w-full py-3.5 flex items-center justify-center gap-2" onClick={onUpgrade}><Crown size={16} /> {TRIAL_DAYS > 0 ? `Try Pro free for ${TRIAL_DAYS} days` : 'See Pro plans'}</button>
           <button className="text-body-small text-ink-secondary py-2 hover:text-ink-primary" onClick={onClose}>Not now</button>
         </div>
       }>
