@@ -70,7 +70,7 @@ export function JournalProvider({ session, children }) {
     <Ctx.Provider value={value}>
       {children}
       <VaultHost />
-      <UpgradeSheet reason={upgrade} onClose={() => setUpgrade(null)} onUpgrade={() => { setUpgrade(null); navigate('/settings/account') }} />
+      <UpgradeSheet reason={upgrade} onClose={() => setUpgrade(null)} onUpgrade={() => { const r = upgrade || 'general'; setUpgrade(null); navigate(`/upgrade?reason=${encodeURIComponent(r)}`) }} />
     </Ctx.Provider>
   )
 }
