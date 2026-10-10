@@ -281,7 +281,7 @@ export default function PhysicalTab({ session }) {
       <ConfirmSheet open={sheet === 'reset'} onClose={() => setSheet(null)} danger title="Delete all Physical data?" confirmLabel="Delete everything"
         message="This permanently deletes your baseline, snapshots, experiments, moments and AI readings. Your journal and everything else stay." onConfirm={doReset} />
 
-      <PhysicalUpgrade reason={upgrade} onClose={() => setUpgrade(null)} onUpgrade={() => { setUpgrade(null); navigate('/settings/account') }} />
+      <PhysicalUpgrade reason={upgrade} onClose={() => setUpgrade(null)} onUpgrade={() => { const r = upgrade || 'ai'; setUpgrade(null); navigate(`/upgrade?reason=${encodeURIComponent(r)}`) }} />
       {toast}
     </div>
   )
