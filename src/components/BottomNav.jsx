@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { Camera, Brain, Sparkles, BookOpen, TrendingUp } from 'lucide-react'
 
 const tabs = [
@@ -10,6 +10,8 @@ const tabs = [
 ]
 
 export default function BottomNav() {
+  const { pathname } = useLocation()
+  if (pathname.startsWith('/upgrade')) return null
   return (
     <nav
       className="lg:hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md
