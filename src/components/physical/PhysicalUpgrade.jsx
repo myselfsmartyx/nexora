@@ -1,5 +1,6 @@
 import { Check, Crown, Sparkles } from 'lucide-react'
 import { Sheet } from '../journal/ui.jsx'
+import { TRIAL_DAYS } from '../../lib/billing/plans.js'
 
 const REASONS = {
   ai: { emoji: '🪞', title: 'You’ve used this month’s free readings', body: 'Everything else in Physical keeps working — snapshots, your trend, experiments and local suggestions. Pro gives you far more AI readings and suggestions.' },
@@ -20,7 +21,7 @@ export default function PhysicalUpgrade({ reason, onClose, onUpgrade }) {
   return (
     <Sheet open onClose={onClose} tall
       footer={<div className="flex flex-col gap-sm">
-        <button className="btn-primary w-full py-3.5 flex items-center justify-center gap-2" onClick={onUpgrade}><Crown size={16} /> See Pro plans</button>
+        <button className="btn-primary w-full py-3.5 flex items-center justify-center gap-2" onClick={onUpgrade}><Crown size={16} /> {TRIAL_DAYS > 0 ? `Try Pro free for ${TRIAL_DAYS} days` : 'See Pro plans'}</button>
         <button className="text-body-small text-ink-secondary py-2 hover:text-ink-primary" onClick={onClose}>Not now</button>
       </div>}>
       <div className="flex flex-col items-center text-center pt-sm pb-md animate-rise">
