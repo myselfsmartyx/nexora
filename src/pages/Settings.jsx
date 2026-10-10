@@ -6,6 +6,9 @@ import {
   Wifi, WifiOff,
 } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
+import { usePlan } from '../lib/billing/usePlan.js'
+import { openBillingPortal } from '../lib/billing/checkout.js'
+import { TRIAL_DAYS, fullDate } from '../lib/billing/plans.js'
 import { ACCENTS, applyTheme } from '../lib/theme.js'
 import {
   isLockEnabled, setPin, verifyPin, disableLock, isValidPin, MIN_PIN, MAX_PIN,
@@ -166,6 +169,46 @@ function Field({ label, children }) {
 }
 
 // ---------- sections ----------
+function PlanCard({ notify }) {
+  const navigate = useNavigate()
+  const { isPro, loading, status, periodEnd, cancelAtPeriodEnd } = usePlan()
+  const [busy, setBusy] = useState(false)
+
+  async function manage() {
+    setBusy(true)
+    try {
+      await openBillingPortal()
+    } catch (e) {
+      notify(e.message)
+      setBusy(false)
+    }
+  }
+
+  if (loading) return <div className="card p-md h-[76px] animate-shimmer" />
+
+  const date = fullDate(periodEnd)
+  let caption = TRIAL_DAYS > 0 ? `Try Pro free for ${TRIAL_DAYS} days. Cancel anytime.` : 'Upgrade for more AI, privacy and insights.'
+  if (isPro) {
+    if (status === 'past_due') caption = 'Your last payment did not go through. Update your payment method to keep Pro.'
+    else if (status === 'cancelled' || cancelAtPeriodEnd) caption = `Pro stays active until ${date}. It will not renew.`
+    else caption = date ? `Renews on ${date}.` : 'Thanks for supporting Nexora.'
+  }
+
+  return (
+    <div className="card p-md flex items-center justify-between gap-md">
+      <div className="min-w-0">
+        <p className="text-body text-ink-primary">{isPro ? 'Pro' : 'Free'}</p>
+        <p className="text-caption text-ink-secondary">{caption}</p>
+      </div>
+      {isPro ? (
+        <button className="btn-secondary !py-2 shrink-0" onClick={manage} disabled={busy}>{busy ? 'Opening' : 'Manage'}</button>
+      ) : (
+        <button className="btn-primary px-md py-2 shrink-0" onClick={() => navigate('/upgrade')}>Upgrade</button>
+      )}
+    </div>
+  )
+}
+
 function AccountSection({ session, notify }) {
   const email = session.user.email || ''
   const [name, setName] = useState('')
@@ -254,15 +297,7 @@ function AccountSection({ session, notify }) {
 
       <div>
         <SectionTitle>Plan</SectionTitle>
-        <div className="card p-md flex items-center justify-between">
-          <div>
-            <p className="text-body text-ink-primary">{plan}</p>
-            <p className="text-caption text-ink-secondary">
-              {plan === 'Free' ? 'Upgrade options are coming soon.' : 'Thanks for supporting Nexora.'}
-            </p>
-          </div>
-          <span className="chip chip-active">{plan}</span>
-        </div>
+        <PlanCard notify={notify} />
       </div>
 
       <div>
