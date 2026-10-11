@@ -1,8 +1,8 @@
 import { supabase } from '../supabase.js'
 
-// The server hands back a hosted payment page. We only ever follow it to a payment
-// provider's own domain over HTTPS, so a bad response can never send someone elsewhere.
-const ALLOWED_HOSTS = [/(^|\.)dodopayments\.com$/, /(^|\.)razorpay\.com$/, /^rzp\.io$/]
+// The server hands back a hosted payment page. We only ever follow it to Dodo's own
+// domain over HTTPS, so a bad response can never send someone elsewhere.
+const ALLOWED_HOSTS = [/(^|\.)dodopayments\.com$/]
 
 export function safeCheckoutUrl(raw) {
   try {
