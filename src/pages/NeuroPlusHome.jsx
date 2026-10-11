@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Zap, Play, Grid3x3, Calculator, Puzzle, CalendarDays, Trophy, Brain } from 'lucide-react'
+import { Zap, Play, Grid3x3, Calculator, Puzzle, CalendarDays, Trophy, Brain, TrendingUp, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
 
 const GAMES = [
@@ -150,6 +150,26 @@ export default function NeuroPlusHome({ session }) {
             )
           })}
         </section>
+
+        {/* Brain Progress (Pro) */}
+        <button
+          onClick={() => navigate('/neuro/progress')}
+          className="card p-md flex items-center justify-between gap-md text-left transition active:scale-[0.98] hover:border-primary/50"
+        >
+          <div className="flex items-center gap-md">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shrink-0">
+              <TrendingUp size={20} />
+            </div>
+            <div>
+              <h4 className="text-body font-semibold text-ink-primary flex items-center gap-1.5">
+                Brain Progress
+                <span className="rounded-chip bg-primary text-base-bg text-caption font-bold px-2 py-0.5">Pro</span>
+              </h4>
+              <p className="text-caption text-ink-secondary">See your memory, focus and speed improve week by week.</p>
+            </div>
+          </div>
+          <ChevronRight size={18} className="text-ink-tertiary shrink-0" />
+        </button>
       </main>
 
       {toast && (
