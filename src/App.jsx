@@ -16,6 +16,7 @@ import PersonalDevelopment from './pages/PersonalDevelopment.jsx'
 import AiChat from './pages/AiChat.jsx'
 import Settings from './pages/Settings.jsx'
 import Upgrade, { UpgradeDone } from './pages/Upgrade.jsx'
+import NeuroProgress from './pages/NeuroProgress.jsx'
 import AppLock from './components/AppLock.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import { applyTheme } from './lib/theme.js'
@@ -136,6 +137,7 @@ export default function App() {
             <Route path="/capture" element={<Capture session={session} />} />
             <Route path="/capture/:id" element={<KnowledgeDetail session={session} />} />
             <Route path="/neuro" element={<NeuroPlusHome session={session} />} />
+            <Route path="/neuro/progress" element={<NeuroProgress session={session} />} />
             <Route path="/neuro/rapid-math" element={<RapidMath session={session} />} />
             <Route path="/neuro/rapid-math/:op" element={<RapidMath session={session} />} />
             <Route path="/neuro/memory-matrix" element={<MemoryMatrix session={session} />} />
