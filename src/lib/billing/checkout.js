@@ -48,8 +48,8 @@ async function call(fn, body) {
 }
 
 // The client sends only a plan choice. Price, product and provider are decided on the server.
-export async function startCheckout({ interval, currency, reason }) {
-  window.location.assign(await call('create-checkout', { interval, currency, reason }))
+export async function startCheckout({ interval, reason }) {
+  window.location.assign(await call('create-checkout', { interval, reason }))
 }
 
 export async function openBillingPortal() {
