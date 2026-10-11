@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ArrowDown, ArrowLeft, BarChart3, Bell, Brain, Check, CheckCircle2, ChevronDown, CreditCard, Crown, Film,
@@ -9,8 +9,8 @@ import { usePlan } from '../lib/billing/usePlan.js'
 import { useToday } from '../lib/billing/useToday.js'
 import { startCheckout } from '../lib/billing/checkout.js'
 import {
-  TRIAL_DAYS, HEADLINE_LEAD, HEADLINE_ACCENT, PROOF_LINE, PRICES, CAPTURE, COMPARE, STORIES, REASON_LABEL, LEGAL,
-  detectCurrency, money, yearlyPerMonth, yearlyPerDay, savingsPercent, addDays, shortDate, fullDate,
+  TRIAL_DAYS, HEADLINE_LEAD, HEADLINE_ACCENT, PRICES, CAPTURE, COMPARE, STORIES, REASON_LABEL, LEGAL,
+  money, yearlyPerMonth, yearlyPerDay, savingsPercent, addDays, shortDate, fullDate,
 } from '../lib/billing/plans.js'
 
 const ICONS = { inbox: Inbox, brain: Brain, zap: Zap, chart: BarChart3, shield: ShieldCheck, heart: HeartPulse }
@@ -111,7 +111,7 @@ function TrialTimeline({ now, priceLabel }) {
   ].filter(Boolean)
   return (
     <section aria-label="How your free trial works" className="card p-md">
-      <h2 className="text-h3 text-ink-primary mb-md">Try it free. Keep it only if it works for you.</h2>
+      <h2 className="text-h3 text-ink-primary mb-md">Try it free. Pay only when you know it's worth it</h2>
       <ol className="relative flex flex-col gap-md">
         <span aria-hidden className="absolute left-[15px] top-4 bottom-4 w-px bg-base-border" />
         {steps.map(({ icon: Icon, when, text }) => (
@@ -131,7 +131,7 @@ function TrialTimeline({ now, priceLabel }) {
 function CompareTable() {
   return (
     <section className="card p-md">
-      <h2 className="text-h3 text-ink-primary mb-sm">Free is generous. Pro removes the ceiling.</h2>
+      <h2 className="text-h3 text-ink-primary mb-sm">Free vs Pro</h2>
       <table className="w-full text-body-small">
         <caption className="sr-only">What is included in Free and in Pro</caption>
         <thead>
@@ -157,10 +157,8 @@ function CompareTable() {
   )
 }
 
-function Faq({ currency, trialEndLabel }) {
-  const pay = currency === 'INR'
-    ? 'Pay with UPI, RuPay or any card. Indian banks set up autopay in their own way, so confirming it can take up to 48 hours. You never need to pay twice. We never see or store your card details.'
-    : 'Pay with a card or wallet. Dodo Payments is our merchant of record and handles tax. We never see or store your card details.'
+function Faq({ trialEndLabel }) {
+  const pay = 'Pay with a card or wallet, or with UPI in India. Dodo Payments is our merchant of record and handles tax. Indian banks can take up to 48 hours to confirm autopay. We never see or store your card details.'
   const items = [
     ['What happens if I cancel?', 'You keep Pro until the end of the period you have paid for. After that you return to the Free limits. Nothing is deleted, and you can export everything at any time.'],
     TRIAL_DAYS > 0 && ['How does the free trial work?', `You get all of Pro for ${TRIAL_DAYS} days. We email you 2 days before it ends. Cancel before ${trialEndLabel} in Settings and you pay nothing.`],
@@ -169,7 +167,7 @@ function Faq({ currency, trialEndLabel }) {
   ].filter(Boolean)
   return (
     <section aria-label="Frequently asked questions" className="flex flex-col gap-sm">
-      <h2 className="text-h3 text-ink-primary">Before you decide</h2>
+      <h2 className="text-h3 text-ink-primary">FAQ</h2>
       {items.map(([q, a]) => (
         <details key={q} className="group card px-md">
           <summary className="flex items-center justify-between gap-sm py-3 cursor-pointer list-none text-body-small font-medium text-ink-primary [&::-webkit-details-marker]:hidden">
@@ -207,7 +205,6 @@ export default function Upgrade({ session }) {
   const progress = useMyProgress(session?.user?.id)
   const now = useToday()
 
-  const currency = useMemo(detectCurrency, [])   // one price list; only the display currency adapts
   const [billing, setBilling] = useState('year')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -230,8 +227,7 @@ export default function Upgrade({ session }) {
     )
   }
 
-  const prices = PRICES[currency]
-  const selectedPrice = money(prices[billing], currency)
+  const selectedPrice = money(PRICES[billing])
   const unit = billing === 'year' ? 'year' : 'month'
   const trialEnd = addDays(now, TRIAL_DAYS)
   const showProgress = progress && progress.captures + progress.entries >= 3
@@ -240,7 +236,7 @@ export default function Upgrade({ session }) {
     setError('')
     setBusy(true)
     try {
-      await startCheckout({ interval: billing, currency, reason })
+      await startCheckout({ interval: billing, reason })
     } catch (e) {
       setError(e.message)
       setBusy(false)
@@ -255,9 +251,6 @@ export default function Upgrade({ session }) {
         {HEADLINE_LEAD}{' '}
         <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{HEADLINE_ACCENT}</span>
       </h1>
-      <p className="mt-md rounded-card border border-primary/30 bg-primary/5 px-md py-sm text-body text-ink-primary font-medium flex gap-sm items-start">
-        <Sparkles size={18} className="text-primary shrink-0 mt-0.5" /> {PROOF_LINE}
-      </p>
       <p className="text-body text-ink-secondary leading-relaxed mt-md">
         Stop collecting ideas you never use. Pro makes Nexora capture them, understand them and bring them back exactly when you need them.
       </p>
@@ -290,21 +283,21 @@ export default function Upgrade({ session }) {
             <PlanOption
               selected={billing === 'year'} onSelect={() => setBilling('year')}
               title="Annual" badge="Best value"
-              price={money(prices.year, currency)} unit="a year"
+              price={money(PRICES.year)} unit="a year"
               lines={[
-                `That is ${money(yearlyPerMonth(currency), currency)} a month, about ${money(yearlyPerDay(currency), currency)} a day.`,
-                `Save ${savingsPercent(currency)}% compared with paying monthly`,
+                `That is ${money(yearlyPerMonth())} a month, about ${money(yearlyPerDay())} a day.`,
+                `Save ${savingsPercent()}% compared with paying monthly`,
               ]}
             />
             <PlanOption
               selected={billing === 'month'} onSelect={() => setBilling('month')}
               title="Monthly"
-              price={money(prices.month, currency)} unit="a month"
+              price={money(PRICES.month)} unit="a month"
               lines={['Billed monthly. Cancel anytime.']}
             />
           </div>
           <p className="text-caption text-ink-tertiary mt-sm">
-            {currency === 'INR' ? 'Pay with UPI, RuPay or any card.' : 'Shown in US dollars. At checkout you will see your local currency.'} Any tax that applies is shown at checkout.
+            All prices are in US dollars. At checkout you will see your local currency. Any tax that applies is shown at checkout.
           </p>
         </div>
 
@@ -319,7 +312,7 @@ export default function Upgrade({ session }) {
           </p>
         </div>
 
-        <Faq currency={currency} trialEndLabel={shortDate(trialEnd)} />
+        <Faq trialEndLabel={shortDate(trialEnd)} />
 
         <p className="text-caption text-ink-tertiary text-center pb-md">
           {[['Terms', LEGAL.terms], ['Privacy', LEGAL.privacy], ['Refunds', LEGAL.refunds]]
