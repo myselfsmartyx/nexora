@@ -9,6 +9,8 @@ import {
   findUrl, normalizeUrl, hostOf, detectPlatform, PLATFORM_LABEL, saveCapture, analyzeItem,
   MAX_UPLOAD_BYTES, safeFileName,
 } from '../lib/capture.js'
+import { usePlan } from '../lib/billing/usePlan.js'
+import { CAPTURE } from '../lib/billing/plans.js'
 import ItemCard from '../components/capture/ItemCard.jsx'
 import CaptureSheet from '../components/capture/CaptureSheet.jsx'
 import ReelSheet from '../components/capture/ReelSheet.jsx'
@@ -37,6 +39,8 @@ export default function Capture({ session }) {
   const [sheet, setSheet] = useState(null) // null | { mode: 'note'|'voice'|'link', initialText? } | 'reel'
   const [searchOpen, setSearchOpen] = useState(false)
   const [collectionsKey, setCollectionsKey] = useState(0)
+  const { isPro } = usePlan()
+  const [limitHit, setLimitHit] = useState(false)
 
   const fileRef = useRef(null)
   const toastTimer = useRef(null)
@@ -111,6 +115,7 @@ export default function Capture({ session }) {
       // Item is safely saved either way; mark it failed locally so the user can retry.
       setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, status: 'failed' } : it)))
       showToast(err.message)
+      if (err.code === 'daily_limit' && !isPro) setLimitHit(true)
     } finally {
       setExtractingIds((prev) => {
         const next = new Set(prev)
@@ -118,7 +123,7 @@ export default function Capture({ session }) {
         return next
       })
     }
-  }, [showToast])
+  }, [showToast, isPro])
 
   // Adds a new item to the top of the list and starts AI analysis.
   const addAndAnalyze = useCallback((item) => {
@@ -477,7 +482,18 @@ export default function Capture({ session }) {
       )}
 
       {/* Toast */}
-      {toast && (
+      {limitHit && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md card p-md shadow-card border-primary/40">
+          <p className="text-body-small text-ink-primary font-semibold">You've used today's {CAPTURE.free} free AI captures</p>
+          <p className="text-caption text-ink-secondary mt-1">Everything you saved is safe. Pro analyzes up to {CAPTURE.pro} a day, so nothing has to wait until tomorrow.</p>
+          <div className="flex gap-sm mt-md">
+            <button className="btn-primary flex-1 py-2.5" onClick={() => navigate('/upgrade?reason=capture')}>See what Pro unlocks</button>
+            <button className="btn-secondary px-md" onClick={() => setLimitHit(false)}>Not now</button>
+          </div>
+        </div>
+      )}
+
+      {toast && !limitHit && (
         <div role="status" className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[70] bg-base-elevated border border-base-border text-ink-primary text-body-small px-md py-2.5 rounded-button shadow-card max-w-[92vw] text-center">
           {toast}
         </div>
