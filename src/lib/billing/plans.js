@@ -1,12 +1,11 @@
 // =====================================================================
 // Nexora Pro: single source of truth for pricing, limits and the sales copy.
 //
-// ONE provider (Dodo Payments, merchant of record) handles UPI, Indian cards and
-// every other country, so there is one price list. The page picks a display
-// currency automatically (no India/Worldwide switch).
+// ONE provider (Dodo Payments, merchant of record) and ONE price list, shown in US
+// dollars to everyone. At checkout Dodo shows each buyer their local currency.
 //
-// ⚠ PRICES here are what the app DISPLAYS. Create four products in Dodo with exactly
-//   these amounts (INR amounts as tax-inclusive). The server decides what is charged.
+// ⚠ PRICES here are what the app DISPLAYS. Create two products in Dodo (monthly and
+//   annual) with exactly these USD amounts. The server decides what is charged.
 // ⚠ TRIAL: set TRIAL_DAYS to 0 to remove every trial mention. If > 0, the trial
 //   must also be configured on the Dodo products.
 // =====================================================================
@@ -14,28 +13,17 @@ import { FREE, PRO } from '../journal/constants.js'
 
 export const TRIAL_DAYS = 7
 
-// Hero copy. PROOF_LINE is a factual claim: keep it only while you can back it up.
-export const HEADLINE_LEAD = 'Turn everything you save into'
-export const HEADLINE_ACCENT = 'who you become.'
-export const PROOF_LINE = 'Join growth-seekers saving 14 hours every week.'
+// Hero headline (a factual claim: keep it only while you can back it up).
+export const HEADLINE_LEAD = 'Join growth-seekers saving'
+export const HEADLINE_ACCENT = '14 hours every week.'
 
-export const CURRENCIES = {
-  INR: { code: 'INR', locale: 'en-IN' },
-  USD: { code: 'USD', locale: 'en-US' },
-}
-
-// Near-parity: Rs1,299 is about 3% under $13.99 at today's rate, so nobody is
-// "the expensive region" and there is no reason to switch currency to save money.
-export const PRICES = {
-  INR: { month: 1299, year: 12999 },
-  USD: { month: 13.99, year: 139.99 },
-}
+export const PRICES = { month: 13.99, year: 139.99 }
 
 // Fill these in once your policy pages exist (Dodo asks for them).
 export const LEGAL = { terms: '', privacy: '', refunds: '' }
 
 // Mirrors the limits enforced by the Edge Functions (the server is the boss).
-export const CAPTURE = { free: 20, pro: 200 }   // extract-content, per day
+export const CAPTURE = { free: 10, pro: 100 }   // extract-content, per day (must match the Edge Function)
 const CHAT = { free: 15, pro: 150 }              // ai-chat, per day
 const PHYSICAL = { free: 3, pro: 12 }            // physical-ai: free per month, Pro per day
 
@@ -89,27 +77,14 @@ export const REASON_LABEL = {
   reasons: 'Reasons behind your patterns', visit: 'Doctor-visit summary', experiments: 'More experiments', ai: 'More AI readings',
 }
 
-export function detectCurrency() {
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''
-    if (tz === 'Asia/Kolkata' || tz === 'Asia/Calcutta') return 'INR'
-  } catch { /* fall through */ }
-  return 'USD'
-}
-
-export function money(amount, currency) {
-  const { locale, code } = CURRENCIES[currency]
-  const whole = currency === 'INR'
-  return new Intl.NumberFormat(locale, {
-    style: 'currency', currency: code,
-    minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2,
-  }).format(amount)
+export function money(amount) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount)
 }
 
 // Everything below is computed from PRICES so the savings shown can never drift from the real numbers.
-export const yearlyPerMonth = (c) => PRICES[c].year / 12
-export const yearlyPerDay = (c) => PRICES[c].year / 365
-export const savingsPercent = (c) => Math.round((1 - PRICES[c].year / (PRICES[c].month * 12)) * 100)
+export const yearlyPerMonth = () => PRICES.year / 12
+export const yearlyPerDay = () => PRICES.year / 365
+export const savingsPercent = () => Math.round((1 - PRICES.year / (PRICES.month * 12)) * 100)
 
 // Dates are always computed from "now", never typed in. Calendar-day arithmetic
 // (not 24h blocks) so a daylight-saving change can never shift a date by one.
