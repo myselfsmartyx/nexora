@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { supabase } from './lib/supabase.js'
 import BottomNav from './components/BottomNav.jsx'
 import Login from './pages/Login.jsx'
+import Legal from './pages/Legal.jsx'
+import { LEGAL_PATHS } from './lib/legalInfo.js'
 import Onboarding from './pages/Onboarding.jsx'
 import Capture from './pages/Capture.jsx'
 import KnowledgeDetail from './pages/KnowledgeDetail.jsx'
@@ -94,6 +96,11 @@ export default function App() {
       cancelled = true
     }
   }, [signedInUserId])
+
+  // Policy pages are public: anyone can read them, signed in or not
+  // (payment providers and new visitors must be able to see them).
+  const legalKind = LEGAL_PATHS[window.location.pathname.replace(/\/+$/, '')]
+  if (legalKind) return <Legal kind={legalKind} />
 
   // Splash while we check the session
   if (checking) {
