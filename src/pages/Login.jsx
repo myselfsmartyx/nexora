@@ -208,7 +208,9 @@ export default function Login() {
             </button>
           </p>
           <p className="text-caption text-ink-tertiary text-center max-w-[280px]">
-            By continuing, you agree to our Terms and Privacy Policy.
+            By continuing, you agree to our{' '}
+            <a href="/terms" target="_blank" rel="noreferrer" className="underline">Terms</a> and{' '}
+            <a href="/privacy" target="_blank" rel="noreferrer" className="underline">Privacy Policy</a>.
           </p>
         </footer>
       </main>
