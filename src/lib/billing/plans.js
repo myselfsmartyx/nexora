@@ -19,8 +19,8 @@ export const HEADLINE_ACCENT = '14 hours every week.'
 
 export const PRICES = { month: 13.99, year: 139.99 }
 
-// Fill these in once your policy pages exist (Dodo asks for them).
-export const LEGAL = { terms: '', privacy: '', refunds: '' }
+// Public policy pages (Dodo asks for them). Edit the wording in src/pages/Legal.jsx.
+export const LEGAL = { terms: '/terms', privacy: '/privacy', refunds: '/refunds' }
 
 // Mirrors the limits enforced by the Edge Functions (the server is the boss).
 export const CAPTURE = { free: 10, pro: 100 }   // extract-content, per day (must match the Edge Function)
