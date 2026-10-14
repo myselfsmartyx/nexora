@@ -7,8 +7,8 @@
 // =====================================================================
 export const LEGAL_INFO = {
   product: 'Nexora',
-  operator: '[Your full name or business name]',
-  email: '[your support email]',
+  operator: 'nexora team',
+  email: 'support.nexora.app@gmail.com',
   jurisdiction: 'India',
   updated: '11 October 2026',
 }
