@@ -136,9 +136,12 @@ export default function ReelSheet({ userId, onClose, onPasteClipboard, onSaveRec
             <div className="flex items-start gap-3">
               <Video size={20} className="text-primary mt-0.5 shrink-0" />
               <div className="flex-1">
-                <h3 className="text-body font-semibold text-ink-primary">Capture what's said in the reel</h3>
+                <h3 className="text-body font-semibold text-ink-primary flex flex-wrap items-center gap-2">
+                  Capture what's said in the reel
+                  <span className="text-[10px] font-semibold text-success border border-success/30 bg-success/10 rounded-full px-2 py-0.5">Best results</span>
+                </h3>
                 <p className="text-body-small text-ink-secondary mt-1">
-                  Instagram hides most reel text from apps. For the full tips and tools, screen-record the reel and upload it. Nexora transcribes the audio.
+                  Instagram keeps reel audio private, so a link alone only gives the caption. For the full tips and tools: swipe down on your phone, tap <b>Screen Record</b>, play the reel <b>with sound on</b>, stop, then upload it here. Nexora transcribes it and extracts everything.
                 </p>
                 <input
                   value={reelLink}
