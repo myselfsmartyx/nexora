@@ -123,9 +123,10 @@ export async function saveCapture(userId, f) {
   return { item: data, duplicate: false }
 }
 
-// Runs the AI analysis for one item. Returns { item, collection, needs_details }.
+// Runs the AI analysis for one item. Returns { item, collection, needs_details, understanding }.
+// Parts the user has edited by hand (insights.locked) are never overwritten by the AI.
 export function analyzeItem(itemId) {
-  return invokeFn('extract-content', { item_id: itemId })
+  return invokeFn('capture-analyze', { item_id: itemId })
 }
 
 // =====================================================================================
@@ -247,4 +248,121 @@ export function safeFileName(name) {
   const base = (dot > 0 ? name.slice(0, dot) : name).replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 40) || 'file'
   const ext = (dot > 0 ? name.slice(dot + 1) : '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 8).toLowerCase()
   return ext ? `${base}.${ext}` : base
+}
+
+// =====================================================================================
+// Manual control: edit what the AI extracted, organise it your own way
+// =====================================================================================
+
+// The AI's own category list. Users can also type any custom category.
+export const CATEGORIES = [
+  'AI & Tools', 'SEO & Marketing', 'Business Strategy', 'Finance', 'Productivity',
+  'Personal Development', 'Learning', 'Tech & Coding', 'Design & Creativity',
+  'Health & Fitness', 'Career', 'Lifestyle', 'Uncategorized',
+]
+
+export const asList = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()) : [])
+
+// `insights` is JSON; older items may hold an array or nothing, so always read it through here.
+export function insightsOf(item) {
+  const v = item?.insights
+  return v && typeof v === 'object' && !Array.isArray(v) ? v : {}
+}
+
+export function normalizeTag(raw) {
+  return String(raw || '').trim().toLowerCase().replace(/^#+/, '').replace(/\s+/g, '-').replace(/[^\p{L}\p{M}\p{N}_-]/gu, '').slice(0, 30)
+}
+
+// Updates columns on one item and returns the fresh row.
+export async function patchItem(itemId, fields) {
+  const { data, error } = await supabase.from('knowledge_items').update(fields).eq('id', itemId).select('*').single()
+  if (error) throw error
+  return data
+}
+
+// Returns a copy of `insights` with new values, marking those parts as "edited by the user"
+// so a later AI re-analysis keeps them.
+export function editInsights(current, changes, lockKey) {
+  const cur = current && typeof current === 'object' && !Array.isArray(current) ? current : {}
+  const locked = { ...(cur.locked && typeof cur.locked === 'object' ? cur.locked : {}) }
+  if (lockKey) locked[lockKey] = true
+  return { ...cur, ...changes, locked }
+}
+
+export async function fetchCollections(userId) {
+  const [{ data: cols, error }, { data: links, error: lErr }] = await Promise.all([
+    supabase.from('collections').select('id, name, description, is_auto, created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(100),
+    supabase.from('collection_items').select('collection_id').eq('user_id', userId).limit(2000),
+  ])
+  if (error) throw error
+  if (lErr) throw lErr
+  const counts = {}
+  for (const l of links || []) counts[l.collection_id] = (counts[l.collection_id] || 0) + 1
+  return (cols || []).map((c) => ({ ...c, count: counts[c.id] || 0 })).sort((a, b) => b.count - a.count)
+}
+
+export function cleanCollectionName(raw) {
+  return String(raw || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60)
+}
+
+// Creates a folder, or returns the existing one with the same name (case-insensitive).
+export async function createCollection(userId, rawName) {
+  const name = cleanCollectionName(rawName)
+  if (!name) throw new Error('Give the folder a name.')
+  const existing = await fetchCollections(userId)
+  const same = existing.find((c) => c.name.toLowerCase() === name.toLowerCase())
+  if (same) return { collection: same, created: false }
+  const { data, error } = await supabase.from('collections').insert({ user_id: userId, name, is_auto: false }).select('id, name, description, is_auto, created_at').single()
+  if (error) throw error
+  return { collection: { ...data, count: 0 }, created: true }
+}
+
+export async function renameCollection(userId, id, rawName) {
+  const name = cleanCollectionName(rawName)
+  if (!name) throw new Error('Give the folder a name.')
+  const existing = await fetchCollections(userId)
+  if (existing.some((c) => c.id !== id && c.name.toLowerCase() === name.toLowerCase())) {
+    throw new Error('You already have a folder with that name.')
+  }
+  const { data, error } = await supabase.from('collections').update({ name, is_auto: false, updated_at: new Date().toISOString() }).eq('id', id).select('id, name').single()
+  if (error) throw error
+  return data
+}
+
+// Puts an item in / takes it out of a folder.
+export async function setItemInCollection(userId, itemId, collectionId, on) {
+  if (on) {
+    const { error } = await supabase.from('collection_items').upsert(
+      { collection_id: collectionId, item_id: itemId, user_id: userId },
+      { onConflict: 'collection_id,item_id', ignoreDuplicates: true },
+    )
+    if (error) throw error
+  } else {
+    const { error } = await supabase.from('collection_items').delete().eq('collection_id', collectionId).eq('item_id', itemId)
+    if (error) throw error
+  }
+}
+
+// Every tag and category the user has used, for autocomplete.
+export async function fetchTagVocabulary(userId) {
+  const { data, error } = await supabase.from('knowledge_items').select('tags, category').eq('user_id', userId).order('captured_at', { ascending: false }).limit(500)
+  if (error) throw error
+  const tagCount = {}
+  const cats = new Set()
+  for (const r of data || []) {
+    for (const t of r.tags || []) tagCount[t] = (tagCount[t] || 0) + 1
+    if (r.category) cats.add(r.category)
+  }
+  const tags = Object.keys(tagCount).sort((a, b) => tagCount[b] - tagCount[a]).slice(0, 80)
+  return { tags, categories: [...new Set([...CATEGORIES, ...cats])] }
+}
+
+// How well Nexora understood an item, for display.
+export const UNDERSTANDING_SOURCE = {
+  transcript: 'the video transcript',
+  captions: 'YouTube captions',
+  article: 'the full article',
+  notes: 'your notes',
+  caption: 'the caption only',
+  none: 'very little text',
 }
