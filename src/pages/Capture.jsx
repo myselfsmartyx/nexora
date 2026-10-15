@@ -108,6 +108,8 @@ export default function Capture({ session }) {
       setCollectionsKey((k) => k + 1)
       if (data?.needs_details) {
         showToast('Saved. Not much text was shared, so open it to add details or a recording.')
+      } else if (data?.understanding === 'partial' && ['instagram', 'tiktok', 'facebook'].includes(data?.item?.source_platform)) {
+        showToast('Saved from the caption. Open it and add a screen recording for the full tips.')
       } else if (data?.collection) {
         showToast(`Filed in “${data.collection}”`)
       }
