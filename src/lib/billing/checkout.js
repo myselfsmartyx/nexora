@@ -25,6 +25,8 @@ const MESSAGES = {
   already_subscribed: "You're already on Pro. Manage your plan in Settings.",
   unauthorized: 'Please sign in again to continue.',
   unavailable: "Checkout isn't available right now. You haven't been charged. Please try again in a moment.",
+  no_subscription: "We couldn't find a billing account to manage yet. If you just subscribed, give it a minute and try again.",
+  bad_request: "Something went wrong with that request. Please try again.",
 }
 
 async function errorCode(error) {
