@@ -68,6 +68,11 @@ export default function ItemCard({ item, analyzing = false, onOpen, onRetry }) {
             </span>
           )}
           <span className="flex items-center gap-2">
+            {item.status === 'ready' && !processing && item.insights?.understanding?.level === 'partial' && item.insights.understanding.source === 'caption' && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-ink-tertiary" title="Nexora only saw the caption. Open it to add the video's audio.">
+                Caption only
+              </span>
+            )}
             {item.status === 'needs_details' && !processing && (
               <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-warning">
                 <PencilLine size={11} /> Needs details
