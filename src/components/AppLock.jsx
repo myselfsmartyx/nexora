@@ -1,3 +1,4 @@
+import Logo from './Logo.jsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Delete } from 'lucide-react'
 import { isLockEnabled, lockPinLength, verifyPin, LOCK_EVENT } from '../lib/appLock.js'
@@ -75,9 +76,7 @@ function LockScreen({ userId, onUnlock, onForgot }) {
 
   return (
     <div className="min-h-screen bg-base-bg flex flex-col items-center justify-center px-lg">
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-base-bg text-h1 font-extrabold shadow-glow">
-        N
-      </div>
+      <Logo size={64} />
       <h1 className="text-h2 text-ink-primary mt-lg">Enter your PIN</h1>
       <p className={`text-body-small mt-xs h-5 ${msg ? 'text-error' : 'text-ink-secondary'}`}>
         {wait > 0 ? `Try again in ${wait}s` : msg || 'Nexora is locked'}
