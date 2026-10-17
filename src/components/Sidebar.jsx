@@ -1,3 +1,4 @@
+import Logo from './Logo.jsx'
 import { NavLink } from 'react-router-dom'
 import { Camera, Brain, Sparkles, BookOpen, TrendingUp, Settings } from 'lucide-react'
 
@@ -36,9 +37,7 @@ export default function Sidebar() {
   return (
     <aside className="hidden lg:flex fixed inset-y-0 left-0 w-64 flex-col bg-base-surface border-r border-base-border z-40 px-md py-lg">
       <div className="flex items-center gap-md px-sm mb-xl">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-base-bg text-h3 font-extrabold shadow-glow">
-          N
-        </div>
+        <Logo size={40} />
         <div>
           <p className="text-h3 text-ink-primary leading-tight">Nexora</p>
           <p className="text-caption text-ink-tertiary">Personal OS</p>
