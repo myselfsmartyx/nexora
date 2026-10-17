@@ -18,6 +18,7 @@
     --c-primary: 0 212 170;
     --c-primary-dark: 0 184 148;
     --shadow-alpha: 0.3;
+    --nx-star: #fff;
     color-scheme: dark;
   }
   :root[data-theme='light'] {
@@ -30,6 +31,7 @@
     --c-ink-2: 87 96 106;
     --c-ink-3: 140 149 159;
     --shadow-alpha: 0.08;
+    --nx-star: #4F46E5;
     color-scheme: light;
   }
 
@@ -121,4 +123,17 @@
   @media (prefers-reduced-motion: reduce) {
     .animate-fade-in, .animate-sheet-up, .animate-pop-in, .animate-rise, .animate-shimmer, .animate-lock-wiggle { animation: none !important; }
   }
+}
+
+/* ---------- Logo animation (transform/opacity only: smooth, no layout cost) ---------- */
+@keyframes nx-float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3%) scale(1.03); } }
+@keyframes nx-twinkle { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .55; transform: scale(.82); } }
+@keyframes nx-halo { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes nx-planet { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-14px,10px); } }
+.nx-logo-anim { animation: nx-float 2.4s ease-in-out infinite; will-change: transform; }
+.nx-logo-anim .nx-star { transform-box: fill-box; transform-origin: center; animation: nx-twinkle 1.6s ease-in-out infinite; }
+.nx-logo-anim .nx-halo { animation: nx-halo 1.6s ease-in-out infinite; }
+.nx-logo-anim .nx-planet { animation: nx-planet 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .nx-logo-anim, .nx-logo-anim .nx-star, .nx-logo-anim .nx-halo, .nx-logo-anim .nx-planet { animation: none; }
 }
