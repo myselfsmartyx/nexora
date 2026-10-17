@@ -1,3 +1,4 @@
+import { LogoLoader } from './components/Logo.jsx'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './lib/supabase.js'
@@ -105,11 +106,7 @@ export default function App() {
   // Splash while we check the session
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-base-bg">
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-base-bg text-h1 font-extrabold shadow-glow animate-pulse">
-          N
-        </div>
-      </div>
+      <LogoLoader size={96} />
     )
   }
 
