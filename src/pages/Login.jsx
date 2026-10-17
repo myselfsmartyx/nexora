@@ -1,3 +1,4 @@
+import Logo from '../components/Logo.jsx'
 import { useState } from 'react'
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
@@ -74,9 +75,7 @@ export default function Login() {
       <main className="w-full max-w-sm mx-auto flex flex-col space-y-xl">
         {/* Header */}
         <header className="flex flex-col items-center text-center space-y-xs">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-base-bg text-h1 font-extrabold shadow-glow">
-            N
-          </div>
+          <Logo size={96} />
           <div>
             <h1 className="text-h1 text-ink-primary tracking-tight">Nexora</h1>
             <p className="text-body-small text-ink-secondary mt-xs">
