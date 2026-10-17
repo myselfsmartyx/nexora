@@ -1,3 +1,4 @@
+import Logo from '../components/Logo.jsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
@@ -769,7 +770,7 @@ function AboutSection() {
   return (
     <div className="flex flex-col gap-lg">
       <div className="card p-lg flex flex-col items-center text-center gap-sm">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-base-bg text-h1 font-extrabold shadow-glow">N</div>
+        <Logo size={64} />
         <h2 className="text-h2 text-ink-primary">Nexora</h2>
         <p className="text-body-small text-ink-secondary">Your Personal Operating System</p>
         <span className="chip mt-xs">Version {APP_VERSION}</span>
