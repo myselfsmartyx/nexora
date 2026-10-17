@@ -1,3 +1,4 @@
+import Logo from '../components/Logo.jsx'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
@@ -22,7 +23,7 @@ function Header({ onBack }) {
       <button aria-label="Back" onClick={onBack} className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-ink-secondary hover:bg-base-elevated transition">
         <ArrowLeft size={20} />
       </button>
-      <span className="text-body-small font-semibold text-ink-primary flex items-center gap-1.5"><Crown size={14} className="text-warning" /> Nexora Pro</span>
+      <span className="text-body-small font-semibold text-ink-primary flex items-center gap-2"><Logo size={24} /> Nexora Pro <Crown size={14} className="text-warning" /></span>
     </div>
   )
 }
