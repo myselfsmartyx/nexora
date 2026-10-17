@@ -1,3 +1,4 @@
+import Logo from '../components/Logo.jsx'
 import { useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
@@ -204,9 +205,7 @@ export default function Onboarding({ session, onComplete }) {
           {/* Hero mark */}
           <div className="w-full max-w-[160px] aspect-square mb-lg relative flex items-center justify-center">
             <div className="absolute inset-0 bg-primary opacity-20 rounded-[40px] blur-[60px] pointer-events-none" />
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-base-bg text-h1 font-extrabold shadow-glow relative z-10">
-              N
-            </div>
+            <div className="relative z-10"><Logo size={80} /></div>
           </div>
 
           <div className="text-center mb-xl w-full">
